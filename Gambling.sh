@@ -1,66 +1,73 @@
-#!/bin/bash -x
-#constants
-BET=1
-WIN=1
-MAX_PROFIT_PER_DAY=50
-MAX_LOSS_PER_DAY=-50
 #variables
-numOfWinsPerMonth=0
-numOfLossesPerMonth=0
-lastDayWon=0
-lastDayLoss=0
+minAmount=9999
+maxAmount=0
+saveAmount=100
+win=0
+lose=0
 luckyDay=0
-unluckyDay=0
-for (( day=1; day<=20; day++))
+unLuckyDay=0
+day=0
+perDayWin=0
+flage=1
+while (( $flage >= 1 ))
 do
-        earnMoney=0
-        while [ $earnMoney -gt $MAX_LOSS_PER_DAY -a $earnMoney -lt $MAX_PROFIT_PER_DAY ]
+        for (( day=1; day<=30; day++))
         do
-                if [ $WIN -eq $((RANDOM%2)) ]
+                wallet=0
+                while [[ $wallet -lt $MAX_PROFIT_PER_DAY && $wallet -gt $MAX_LOSS_PER_DAY ]]
+                do
+                        betCheck=$((RANDOM%2))
+                        if [ $WIN -eq $betCheck ]
+                        then
+                                wallet=$(($wallet+$BET))
+                        else
+                                wallet=$(($wallet-$BET))
+                        fi
+                done
+                echo $wallet
+
+                if [ $wallet -eq 50 ]
                 then
-                        earnMoney=$(($earnMoney+$BET))
+                        wins[$day]=$wallet
+                        ((win++))
+                        #perDayWin=$day
                 else
-                        earnMoney=$(($earnMoney-$BET))
+                        loose[$day]=$wallet
+                        ((lose++))
+                        #perDayLose=$day
                 fi
+                saveAmount=$(($saveAmount+$wallet))
+                echo "----/  $saveAmount"
+                if [ $saveAmount -lt $minAmount ]
+                then
+
+                        unLuckyDay=$(($day))
+                        minAmount=$saveAmount
+                fi
+                if [ $saveAmount -gt $maxAmount ]
+                then
+                        luckyDay=$(($day))
+                        maxAmount=$saveAmount
+                fi
+
+                #echo "$minAmount"
+                #echo "$maxAmount"
+
+
         done
-        if [ $earnMoney -eq 50 ]
+
+        echo "days wins ${!wins[@]}--------$((50*$win))"
+        echo "days looses ${!loose[@]}-------$((50*$lose))"
+
+        echo Luckiest day $luckyDay amount is $maxAmount
+        echo Unluckiest day $unLuckyDay amount is $minAmount
+
+        if (( $saveAmount >= 0 ))
         then
-                win[$day]=50
-                ((numOfWinsPerMonth++))
-                if [ $(($lastDayWon+1)) -eq $day ]
-                then
-                        luckyDay=$day
-                fi
-                lastDayWon=$day
-
+                echo "Total profit amount $saveAmount"
+                read -p "Please enter 1 if u want to play again else 0 to exit: " flage
         else
-                loose[$day]=-50
-                ((numOfLossesPerMonth++))
-                if [ $(($lastDayLoss+1)) -eq $day ]
-                then
-                        unluckyDay=$day
-                fi
-                lastDayLoss=$day
-
+                echo "Total loose amoutn $saveAmount"
+                flage=0
         fi
 done
-if [ $luckyDay -eq 1 -o $luckyDay -eq 0 ]
-then
-        luckyDay=$lastDayWon
-fi
-if [ $unluckyDay -eq 1 -o $unluckyDay -eq 0 ]
-then
-        unluckyDay=$lastDayLoss
-fi
-totalAmount=$((50*(($numOfWinsPerMonth-$numOfLossesPerMonth))))
-if [ $totalAmount -gt 0 ]
-then
-        echo $totalAmount dollar won
-else
-        echo $totalAmount dollar loss
-fi
-echo On ${!win[@]} days he won $((50*$numOfWinsPerMonth)) dollar
-echo On ${!loose[@]} days he lost $((50*$numOfLossesPerMonth)) dollar
-echo Lucky day is $luckyDay and unlucky day is $unluckyDay
-
-
