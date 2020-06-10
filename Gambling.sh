@@ -1,24 +1,43 @@
-#!/bin/bash
-maxProfit=50;
-maxLoss=-50;
-#Pocket=0;
-Bet=1;
-win=1;
-for (( i=1 ; i<=20 ; i++ ))
+#!/bin/bash -x
+WIN=1
+STAKE=100
+BET=1
+MAX_PROFIT_PER_DAY=50
+MAX_LOSS_PER_DAY=-50
+saveAmount=100
+totalWin=0
+totalLose=0
+for (( day=1; day<=30; day++))
 do
-        Pocket=0;
-        while [[ $Pocket -lt $maxProfit && $Pocket -gt $maxLoss ]]
+        wallet=0
+        while [[ $wallet -lt $MAX_PROFIT_PER_DAY && $wallet -gt $MAX_LOSS_PER_DAY ]]
         do
-        BetCheck=$((RANDOM%2))
-        if [ $win -eq $BetCheck ]
-        then
-                Pocket=$(($Pocket+$Bet))
-        else
-                Pocket=$(($Pocket-$Bet))
-        fi
+                betCheck=$((RANDOM%2))
+                if [ $WIN -eq $betCheck ]
+                then
+                        wallet=$(($wallet+$BET))
+                else
+                        wallet=$(($wallet-$BET))
+                fi
         done
-        echo $Pocket
+echo $wallet
+
+if [ $wallet -eq 50 ]
+then
+        wins[$day]=$wallet
+        ((totalWin++))
+else
+        loose[$day]=$wallet
+        ((totalLose++))
+fi
+saveAmount=$(($saveAmount+$wallet))
 done
-
-
+echo "days wins ${!wins[@]}--------$((50*$totalWin))"
+echo "days looses ${!loose[@]}-------$((50*$totalLose))"
+if (( $saveAmount >= 0 ))
+then
+        echo "Total profit amount $saveAmount"
+else
+        echo "Total loose amoutn $saveAmount"
+fi
 
