@@ -1,21 +1,24 @@
-#!/bin/bash -x
-WIN=1
-STAKE=100
-BET=1
-MAX_PROFIT_PER_DAY=50
-MAX_LOSS_PER_DAY=-50
-pocket=0
-while [[ $pocket -lt $MAX_PROFIT_PER_DAY && $pocket -gt $MAX_LOSS_PER_DAY ]]
+#!/bin/bash
+maxProfit=50;
+maxLoss=-50;
+#Pocket=0;
+Bet=1;
+win=1;
+for (( i=1 ; i<=20 ; i++ ))
 do
-        RandomCheck=$((RANDOM%2))
-        if [ $WIN -eq $betCheck ]
+        Pocket=0;
+        while [[ $Pocket -lt $maxProfit && $Pocket -gt $maxLoss ]]
+        do
+        BetCheck=$((RANDOM%2))
+        if [ $win -eq $BetCheck ]
         then
-                pocket=$(($pocket+$BET))
+                Pocket=$(($Pocket+$Bet))
         else
-                pocket=$(($pocket-$BET))
+                Pocket=$(($Pocket-$Bet))
         fi
+        done
+        echo $Pocket
 done
 
-echo "$pocket"
-echo "pocket ammout =$(($STAKE+$pocket))"
+
 
