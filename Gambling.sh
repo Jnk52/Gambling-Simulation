@@ -1,7 +1,10 @@
 #!/bin/bash -x
-stake=100
-bet=1
-
-echo "Every day stake= $stake $"
-echo "bet ammount every game = $bet $"
+RandomCheck=$((RANDOM%2))
+WIN=1
+if [ $RandomCheck -eq $WIN ]
+then
+        echo Gambler Wins
+else
+        echo Gambler looses
+fi
 
